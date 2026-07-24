@@ -4,13 +4,17 @@
   let { data, form } = $props();
   const formValues = $derived(form && 'values' in form ? form.values : undefined);
   const value = (key: string) => formValues?.[key as keyof typeof formValues] ?? data.submission?.[key as keyof typeof data.submission] ?? '';
+  let applicationType = $state(String(value('application_type')));
+  const fileSize = (bytes: number) => bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+    : `${Math.ceil(bytes / 1024)} KB`;
 </script>
 
 <div class="page-header">
   <div>
     <p class="page-kicker">Final deliverable</p>
     <h1>Project submission</h1>
-    <p class="page-description">Submit the exact public repository commit that judges should review.</p>
+    <p class="page-description">Share your finished project and everything judges need to test it.</p>
   </div>
   <div class="flex flex-wrap items-center gap-3">
     <span class="status {data.locked ? 'status-warning' : data.submission ? 'status-success' : 'status-neutral'}">
@@ -27,18 +31,20 @@
 
 {#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
 {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
-{#if form?.success}<div class="alert alert-success mt-4">Submission saved. Repository details verified for {form.verifiedRepository}.</div>{/if}
+{#if form?.success}<div class="alert alert-success mt-4">Submission saved. Captured {form.verifiedRepository} at commit {form.capturedCommit}.</div>{/if}
 
 {#if data.submission?.repository_verified_at}
   <div class="alert alert-success mt-4">
-    <strong>Repository verified:</strong> {data.submission.repository_full_name}, checked {formatIstDateTime(data.submission.repository_verified_at)}.
+    <strong>Source captured:</strong> {data.submission.repository_full_name}
+    {#if data.submission.repository_branch} ({data.submission.repository_branch} at {data.submission.commit_sha.slice(0, 12)}){/if},
+    checked {formatIstDateTime(data.submission.repository_verified_at)}.
     {#if data.submission.fork_status === 'archived' && data.submission.fork_url}
       <a class="font-semibold text-brand" href={data.submission.fork_url} target="_blank" rel="noreferrer">View organization archive</a>
     {/if}
   </div>
 {/if}
 
-<form method="POST" class="panel mt-6">
+<form method="POST" enctype="multipart/form-data" class="panel mt-6">
     <section class="form-section">
       <div class="form-section-header">
         <p class="page-kicker">01</p>
@@ -61,18 +67,11 @@
       <div class="form-section-header">
         <p class="page-kicker">02</p>
         <h2>Source snapshot</h2>
-        <p>The repository must be public. We verify the exact commit and preserve it in the event organization after submissions close.</p>
+        <p>Enter the public repository. We capture its current default-branch commit when you save.</p>
       </div>
-      <div class="form-grid">
-        <div class="field">
-          <label for="repository_url">Public GitHub repository URL</label>
-          <input id="repository_url" name="repository_url" type="url" placeholder="https://github.com/owner/repository" required disabled={data.locked} value={value('repository_url')} />
-        </div>
-        <div class="field">
-          <label for="commit_sha">Exact Git commit SHA</label>
-          <input class="font-mono text-sm" id="commit_sha" name="commit_sha" minlength="40" maxlength="40" pattern="[0-9a-fA-F]{40}" required disabled={data.locked} value={value('commit_sha')} />
-          <p class="field-help">The full 40-character commit SHA, not a branch name.</p>
-        </div>
+      <div class="field">
+        <label for="repository_url">Public GitHub repository URL</label>
+        <input id="repository_url" name="repository_url" type="url" placeholder="https://github.com/owner/repository" required disabled={data.locked} value={value('repository_url')} />
       </div>
     </section>
 
@@ -85,16 +84,32 @@
       <div class="form-grid">
         <div class="field">
           <label for="application_type">Application type</label>
-          <select id="application_type" name="application_type" required disabled={data.locked}>
+          <select id="application_type" name="application_type" required disabled={data.locked} bind:value={applicationType}>
             <option value="">Select application type</option>
-            <option value="Web" selected={value('application_type') === 'Web'}>Web</option>
-            <option value="Mobile" selected={value('application_type') === 'Mobile'}>Mobile</option>
+            <option value="Web">Web</option>
+            <option value="Mobile">Mobile</option>
           </select>
         </div>
-        <div class="field">
-          <label for="application_url">Live application or APK URL</label>
-          <input id="application_url" name="application_url" type="url" required disabled={data.locked} value={value('application_url')} />
-        </div>
+        {#if applicationType === 'Web'}
+          <div class="field">
+            <label for="application_url">Live application URL</label>
+            <input id="application_url" name="application_url" type="url" required disabled={data.locked} value={value('application_url')} />
+          </div>
+        {:else if applicationType === 'Mobile'}
+          <div class="field">
+            <label for="apk">APK file</label>
+            {#if data.submission?.apk_object_key}
+              <div class="mb-2 flex flex-wrap items-center gap-2 text-sm">
+                <a class="font-semibold text-brand" href="/submission/apk">{data.submission.apk_filename}</a>
+                {#if data.submission.apk_size}<span class="text-ink-soft">{fileSize(data.submission.apk_size)}</span>{/if}
+              </div>
+            {/if}
+            {#if !data.locked}
+              <input id="apk" name="apk" type="file" accept=".apk,application/vnd.android.package-archive" required={!data.submission?.apk_object_key} />
+              <p class="field-help">{data.submission?.apk_object_key ? 'Choose a file only to replace the current APK.' : 'APK only, maximum 90 MB.'}</p>
+            {/if}
+          </div>
+        {/if}
         <div class="field md:col-span-2">
           <label for="test_instructions">Test credentials or testing instructions</label>
           <textarea id="test_instructions" name="test_instructions" required disabled={data.locked}>{value('test_instructions')}</textarea>
@@ -134,7 +149,7 @@
           <input type="checkbox" name="confirmed" value="yes" required />
           <span>
             <strong class="block text-ink">Submission confirmation</strong>
-            I confirm that the repository, commit, URLs, disclosures, and testing information above are accurate.
+            I confirm that the repository, delivery file or URL, disclosures, and testing information above are accurate.
           </span>
         </label>
       </section>

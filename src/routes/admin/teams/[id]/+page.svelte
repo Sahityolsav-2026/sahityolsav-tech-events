@@ -12,9 +12,9 @@
     ['description', 'Description'],
     ['repository_url', 'Repository URL'],
     ['repository_full_name', 'Verified GitHub repository'],
-    ['commit_sha', 'Commit SHA'],
+    ['repository_branch', 'Captured branch'],
+    ['commit_sha', 'Captured commit'],
     ['application_type', 'Application type'],
-    ['application_url', 'Application or APK URL'],
     ['test_instructions', 'Testing instructions'],
     ['ai_tools', 'AI tools'],
     ['preexisting_assets', 'Pre-existing assets'],
@@ -24,6 +24,9 @@
     ['fork_url', 'Organization archive']
   ];
   const value = (entry: unknown) => entry === null || entry === undefined || entry === '' ? 'Not provided' : String(entry);
+  const fileSize = (bytes: number) => bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+    : `${Math.ceil(bytes / 1024)} KB`;
 </script>
 
 <div class="page-header">
@@ -125,7 +128,7 @@
           <div class={['description', 'test_instructions', 'member_contributions', 'limitations'].includes(field[0]) ? 'sm:col-span-2' : ''}>
             <dt>{field[1]}</dt>
             <dd class={field[0] === 'commit_sha' ? 'font-mono text-xs' : ''}>
-              {#if ['repository_url', 'application_url', 'fork_url'].includes(field[0]) && data.submission[field[0]]}
+              {#if ['repository_url', 'fork_url'].includes(field[0]) && data.submission[field[0]]}
                 <a class="font-medium text-brand" href={String(data.submission[field[0]])} target="_blank" rel="noreferrer">{data.submission[field[0]]}</a>
               {:else}
                 {value(data.submission[field[0]])}
@@ -133,6 +136,30 @@
             </dd>
           </div>
         {/each}
+        {#if data.submission.application_type === 'Web'}
+          <div>
+            <dt>Live application</dt>
+            <dd>
+              <a class="font-medium text-brand" href={String(data.submission.application_url)} target="_blank" rel="noreferrer">
+                {data.submission.application_url}
+              </a>
+            </dd>
+          </div>
+        {:else if data.submission.application_type === 'Mobile'}
+          <div>
+            <dt>APK</dt>
+            <dd>
+              {#if data.submission.apk_object_key}
+                <a class="font-medium text-brand" href={`/admin/teams/${data.team.id}/apk`}>
+                  {data.submission.apk_filename}
+                </a>
+                {#if data.submission.apk_size} · {fileSize(Number(data.submission.apk_size))}{/if}
+              {:else}
+                Not provided
+              {/if}
+            </dd>
+          </div>
+        {/if}
         <div><dt>Repository verified</dt><dd>{data.submission.repository_verified_at ? formatIstDateTime(String(data.submission.repository_verified_at)) : 'Not verified'}</dd></div>
         <div><dt>Last updated</dt><dd>{formatIstDateTime(String(data.submission.updated_at))}</dd></div>
       </dl>

@@ -6,6 +6,7 @@ interface GitHubRepository {
   name: string;
   full_name: string;
   html_url: string;
+  default_branch: string;
   private: boolean;
   archived: boolean;
   parent?: { full_name: string };
@@ -48,6 +49,8 @@ export interface VerifiedRepository {
   canonicalUrl: string;
   owner: string;
   name: string;
+  defaultBranch: string;
+  commitSha: string;
 }
 
 export interface ForkResult {
@@ -113,32 +116,27 @@ export function parseGitHubRepositoryUrl(value: string): { owner: string; name: 
   }
 }
 
-export async function verifyPublicRepository(env: Env, repositoryUrl: string, commitSha: string): Promise<VerifiedRepository> {
+export async function verifyPublicRepository(env: Env, repositoryUrl: string): Promise<VerifiedRepository> {
   const parsed = parseGitHubRepositoryUrl(repositoryUrl);
   if (!parsed) throw new GitHubApiError('Enter a canonical GitHub URL such as https://github.com/owner/repository.', 400);
   const path = `/repos/${encodeURIComponent(parsed.owner)}/${encodeURIComponent(parsed.name)}`;
   const repository = await githubJson<GitHubRepository>(env, path);
   if (repository.private) throw new GitHubApiError('The GitHub repository must be public.', 400);
   if (repository.archived) throw new GitHubApiError('The source GitHub repository is archived.', 400);
-  const commitResponse = await githubFetch(env, `${path}/commits/${encodeURIComponent(commitSha)}`);
-  if (!commitResponse.ok) {
-    throw new GitHubApiError(
-      commitResponse.status === 404 || commitResponse.status === 422
-        ? 'The exact Git commit was not found in this public repository.'
-        : `GitHub could not verify the commit (status ${commitResponse.status}).`,
-      commitResponse.status
-    );
-  }
-  const commit = await commitResponse.json<GitHubCommit>();
-  if (commit.sha.toLowerCase() !== commitSha.toLowerCase()) {
-    throw new GitHubApiError('The exact Git commit could not be verified.', 400);
-  }
+  if (!repository.default_branch) throw new GitHubApiError('The GitHub repository has no default branch.', 400);
+  const commit = await githubJson<GitHubCommit>(
+    env,
+    `${path}/commits/${encodeURIComponent(repository.default_branch)}`
+  );
+  if (!/^[0-9a-f]{40}$/i.test(commit.sha)) throw new GitHubApiError('GitHub did not return a valid commit.', 502);
   return {
     id: repository.id,
     fullName: repository.full_name,
     canonicalUrl: repository.html_url,
     owner: parsed.owner,
-    name: repository.name
+    name: repository.name,
+    defaultBranch: repository.default_branch,
+    commitSha: commit.sha
   };
 }
 

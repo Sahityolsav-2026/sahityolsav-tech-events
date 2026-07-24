@@ -26,6 +26,12 @@
       "migrations_dir": "migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "APKS",
+      "bucket_name": "sahityolsav-tech-events-apks"
+    }
+  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1

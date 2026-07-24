@@ -1,6 +1,6 @@
 # Sahityolsav Tech Events portal
 
-A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Worker, with Cloudflare D1 for accounts, sessions, event settings, ideas, and submissions.
+A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Worker, with Cloudflare D1 for portal data and private Cloudflare R2 storage for submitted APKs.
 
 ## Set up and deploy
 
@@ -25,19 +25,25 @@ A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Wor
 
 4. Copy the returned `database_id` into the `DB` entry in `wrangler.jsonc`, replacing the existing database ID. The checked-in value is the database used by the current deployment.
 
-5. Generate Cloudflare binding types:
+5. Create the private APK bucket. If you choose another name, update the `APKS` entry in `wrangler.jsonc`:
+
+   ```sh
+   npx wrangler r2 bucket create sahityolsav-tech-events-apks
+   ```
+
+6. Generate Cloudflare binding types:
 
    ```sh
    npm run types
    ```
 
-6. Apply migrations locally:
+7. Apply migrations locally:
 
    ```sh
    npm run db:migrate:local
    ```
 
-7. Build and run the complete Worker locally:
+8. Build and run the complete Worker locally:
 
    ```sh
    npm run build
@@ -46,21 +52,21 @@ A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Wor
 
    The local site is normally `http://localhost:8787`. For SvelteKit's faster development server, use `npm run dev`.
 
-8. Apply migrations to production:
+9. Apply migrations to production:
 
    ```sh
    npm run db:migrate:remote
    ```
 
-9. Deploy the single Worker:
+10. Deploy the single Worker:
 
    ```sh
    npm run deploy
    ```
 
-10. Open the deployed `/register` route and register the first normal team account.
+11. Open the deployed `/register` route and register the first normal team account.
 
-11. Promote that account to administrator (replace the email):
+12. Promote that account to administrator (replace the email):
 
     ```sh
     npx wrangler d1 execute DB --remote --command "UPDATE users SET role='admin' WHERE email='admin@example.com';"
@@ -68,7 +74,7 @@ A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Wor
 
     Log out and log in again. The account will be sent to `/admin`.
 
-12. View production logs:
+13. View production logs:
 
     ```sh
     npx wrangler tail
@@ -88,7 +94,7 @@ Restore real event deadlines in `/admin/settings` before deployment. All write d
 
 ## GitHub verification and archiving
 
-Final submissions accept canonical public GitHub repository URLs. On every save, the server verifies that the repository is public and that the submitted commit exists. After the final deadline, the admin dashboard can create organization forks in `Sahityolsav-2026`, verify each submitted commit in its fork, and archive completed forks as read-only.
+Final submissions accept canonical public GitHub repository URLs. On every save, the server verifies that the repository is public and captures the current commit from its default branch. Teams do not enter a commit SHA. After the final deadline, the admin dashboard can create organization forks in `Sahityolsav-2026`, verify each captured commit in its fork, and archive completed forks as read-only.
 
 Create a short-lived fine-grained token owned by the organization with **Administration: read/write** and **Contents: read**, then store it without putting it in source control:
 
@@ -97,6 +103,10 @@ npx wrangler secret put GITHUB_TOKEN
 ```
 
 The organization name is the non-secret `GITHUB_ORG` value in `wrangler.jsonc`. Fork creation is asynchronous, so run **Archive verified repositories** again after a few seconds to reconcile pending forks. The action processes up to eight submissions per request and can be retried safely.
+
+## Application delivery
+
+Web submissions require a live application URL. Mobile submissions require an APK upload of up to 90 MB. APKs remain private in R2 and can be downloaded only by the submitting team or an administrator through the portal.
 
 ## Initial AI reviews
 
