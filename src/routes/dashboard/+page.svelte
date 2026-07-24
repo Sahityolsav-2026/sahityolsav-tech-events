@@ -19,7 +19,7 @@
   <div>
     <p class="page-kicker">Team workspace</p>
     <h1>{data.eventName}</h1>
-    <p class="page-description">{data.team.name}. All deadlines are shown in IST.</p>
+    <p class="page-description">{data.team.name}</p>
   </div>
   <span class="status status-neutral">{data.phase.phase}</span>
 </div>

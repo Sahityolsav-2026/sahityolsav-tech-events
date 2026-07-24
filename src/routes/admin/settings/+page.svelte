@@ -14,9 +14,6 @@
   <a class="btn btn-secondary" href="/admin">Back to overview</a>
 </div>
 
-<div class="alert alert-info mt-6">
-  <strong>Indian Standard Time:</strong> enter every deadline in IST.
-</div>
 {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
 {#if form?.success}<div class="alert alert-success mt-4">Event settings saved.</div>{/if}
 
@@ -39,19 +36,19 @@
     </div>
     <div class="form-grid">
       <div class="field">
-        <label for="registration_deadline">Registration closes (IST)</label>
+        <label for="registration_deadline">Registration closes</label>
         <input id="registration_deadline" name="registration_deadline" type="datetime-local" required value={value('registration_deadline')} />
       </div>
       <div class="field">
-        <label for="idea_deadline">Idea declaration closes (IST)</label>
+        <label for="idea_deadline">Idea declaration closes</label>
         <input id="idea_deadline" name="idea_deadline" type="datetime-local" required value={value('idea_deadline')} />
       </div>
       <div class="field">
-        <label for="development_deadline">Development ends (IST)</label>
+        <label for="development_deadline">Development ends</label>
         <input id="development_deadline" name="development_deadline" type="datetime-local" required value={value('development_deadline')} />
       </div>
       <div class="field">
-        <label for="submission_deadline">Final submission closes (IST)</label>
+        <label for="submission_deadline">Final submission closes</label>
         <input id="submission_deadline" name="submission_deadline" type="datetime-local" required value={value('submission_deadline')} />
       </div>
     </div>

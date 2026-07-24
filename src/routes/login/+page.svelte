@@ -9,7 +9,6 @@
       <h1 class="mt-4 max-w-sm text-3xl leading-tight text-paper">Your team’s event workspace.</h1>
       <p class="mt-4 max-w-sm text-sm leading-6 text-paper/60">Track the current phase, declare your idea, and complete the final submission before the deadline.</p>
     </div>
-    <p class="text-xs text-paper/45">All event times are shown in Indian Standard Time.</p>
   </section>
 
   <section class="px-5 py-8 sm:px-10 sm:py-12">

@@ -54,10 +54,7 @@
 <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
   <section class="panel">
     <div class="panel-header">
-      <div>
-        <h2>Event status</h2>
-        <p class="text-sm text-ink-soft">All event times are shown in IST.</p>
-      </div>
+      <h2>Event status</h2>
     </div>
     <div class="panel-body">
       <div class="grid gap-5 sm:grid-cols-2">
