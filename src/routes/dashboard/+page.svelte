@@ -88,7 +88,7 @@
             <p class="mt-2 font-medium text-ink">{data.submission.project_name}</p>
             <p class="mt-1 text-sm text-ink-soft">First submitted {formatIstDateTime(data.submission.submitted_at)}</p>
           {:else}
-            <p class="mt-2 text-sm text-ink-soft">Provide the public repository, exact commit, application URL, and testing details.</p>
+            <p class="mt-2 text-sm text-ink-soft">Provide the project links, source version, and testing details.</p>
           {/if}
           <p class="mt-2 text-xs text-ink-soft">
             {data.submissionAvailable

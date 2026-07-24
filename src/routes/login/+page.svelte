@@ -7,7 +7,7 @@
     <div>
       <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Sahityolsav 2026</p>
       <h1 class="mt-4 max-w-sm text-3xl leading-tight text-paper">Your team’s event workspace.</h1>
-      <p class="mt-4 max-w-sm text-sm leading-6 text-paper/60">Track the current phase, declare your idea, and submit the exact project commit before the deadline.</p>
+      <p class="mt-4 max-w-sm text-sm leading-6 text-paper/60">Track the current phase, declare your idea, and complete the final submission before the deadline.</p>
     </div>
     <p class="text-xs text-paper/45">All event times are shown in Indian Standard Time.</p>
   </section>

@@ -36,7 +36,7 @@
 
   {#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
   {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
-  {#if form?.success}<div class="alert alert-success mt-4">Submission saved. GitHub verified {form.verifiedRepository}.</div>{/if}
+  {#if form?.success}<div class="alert alert-success mt-4">Submission saved. Repository details verified for {form.verifiedRepository}.</div>{/if}
 
   {#if data.submission?.repository_verified_at}
     <div class="alert alert-success mt-4">

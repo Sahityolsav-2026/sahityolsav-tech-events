@@ -41,13 +41,13 @@ export const actions: Actions = {
     const apiKey = newApiKey || current.api_key;
 
     if (values.endpoint && !validEndpoint(values.endpoint)) {
-      return fail(400, { message: 'Enter an HTTPS API endpoint without credentials, a query, or a fragment.', values });
+      return fail(400, { message: 'Enter a valid secure service URL.', values });
     }
     if (values.endpoint.length > 500 || values.model.length > 200 || newApiKey.length > 2000) {
-      return fail(400, { message: 'One of the AI settings is too long.', values });
+      return fail(400, { message: 'Review settings could not be saved. Check the values and try again.', values });
     }
     if (values.enabled && (!values.endpoint || !values.model || !apiKey)) {
-      return fail(400, { message: 'Endpoint, model, and API key are required before enabling reviews.', values });
+      return fail(400, { message: 'Service URL, model, and API key are required before enabling reviews.', values });
     }
 
     await db.prepare(`UPDATE ai_settings

@@ -56,9 +56,8 @@
     <div class="panel-header">
       <div>
         <h2>Event status</h2>
-        <p class="text-sm text-ink-soft">All operational dates are interpreted in IST.</p>
+        <p class="text-sm text-ink-soft">All event times are shown in IST.</p>
       </div>
-      <span class="status status-neutral">Asia/Kolkata</span>
     </div>
     <div class="panel-body">
       <div class="grid gap-5 sm:grid-cols-2">
@@ -80,7 +79,7 @@
       {#if form?.archiveMessage}<div class="alert alert-info mb-4">{form.archiveMessage}</div>{/if}
       {#if data.archiveAllowed}
         <form method="POST" action="?/archive">
-          <p class="mb-4 text-sm text-ink-soft">Fork verified repositories to the event organization and make completed copies read-only.</p>
+          <p class="mb-4 text-sm text-ink-soft">Create read-only organization copies of verified team repositories.</p>
           <button class="btn btn-secondary w-full">Archive repositories</button>
         </form>
       {:else}

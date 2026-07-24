@@ -78,7 +78,7 @@ export async function runRepositoryReview(
   services?: Partial<ReviewServices>
 ): Promise<ReviewResult> {
   if (!settings.enabled || !settings.endpoint || !settings.model || !settings.api_key) {
-    throw new Error('AI reviews are not fully configured.');
+    throw new Error('AI review settings are incomplete.');
   }
 
   let repositoryIndex: Map<string, RepositoryFile> | null = null;
@@ -195,7 +195,7 @@ export async function runRepositoryReview(
     }
   };
   const defaultStream: StreamFn = (requestedModel, context, options) => {
-    if (!isOpenAICompletionsModel(requestedModel)) throw new Error('The AI review model uses an unsupported API.');
+    if (!isOpenAICompletionsModel(requestedModel)) throw new Error('The selected review model could not be used.');
     return streamSimple(requestedModel, context, options);
   };
   const reviewStream = services?.stream ?? defaultStream;
@@ -264,11 +264,11 @@ The official repository is ${input.submission.repository_full_name} at commit ${
   if (!finishedReport) {
     const lastAssistant = [...messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant');
     if (lastAssistant?.stopReason === 'error' || lastAssistant?.stopReason === 'aborted') {
-      throw new Error(lastAssistant.errorMessage || 'The AI provider could not complete the review.');
+      throw new Error(lastAssistant.errorMessage || 'The review service could not complete this review.');
     }
     finishedReport = lastAssistant ? assistantText(lastAssistant) : '';
   }
-  if (finishedReport.length < 400) throw new Error('The model did not produce a complete review within the configured limits.');
+  if (finishedReport.length < 400) throw new Error('The review could not be completed. Please try again.');
 
   const assistantMessages = messages.filter((message): message is AssistantMessage => message.role === 'assistant');
   return {

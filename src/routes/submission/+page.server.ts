@@ -51,7 +51,7 @@ export const actions: Actions = {
     if (!/^[0-9a-fA-F]{40}$/.test(values.commit_sha)) return fail(400, { message: 'Git commit SHA must be exactly 40 hexadecimal characters.', values });
     if (values.application_type !== 'Web' && values.application_type !== 'Mobile') return fail(400, { message: 'Choose Web or Mobile.', values });
     if (form.get('confirmed') !== 'yes') return fail(400, { message: 'You must confirm that the submitted information is accurate.', values });
-    if (!platform) return fail(500, { message: 'Cloudflare platform bindings are unavailable.', values });
+    if (!platform) return fail(500, { message: 'Repository verification is temporarily unavailable. Please try again.', values });
     let verified;
     try {
       verified = await verifyPublicRepository(platform.env, values.repository_url, values.commit_sha);

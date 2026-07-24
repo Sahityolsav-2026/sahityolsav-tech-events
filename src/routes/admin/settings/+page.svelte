@@ -9,13 +9,13 @@
   <div>
     <p class="page-kicker">Administration</p>
     <h1>Event settings</h1>
-    <p class="page-description">Control the event name and each server-enforced deadline.</p>
+    <p class="page-description">Control the event name and important deadlines.</p>
   </div>
   <a class="btn btn-secondary" href="/admin">Back to overview</a>
 </div>
 
 <div class="alert alert-info mt-6">
-  <strong>Indian Standard Time:</strong> every value below is entered and displayed in IST (Asia/Kolkata). D1 stores the corresponding UTC timestamp.
+  <strong>Indian Standard Time:</strong> enter every deadline in IST.
 </div>
 {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
 {#if form?.success}<div class="alert alert-success mt-4">Event settings saved.</div>{/if}
@@ -35,7 +35,7 @@
   <section class="form-section">
     <div class="form-section-header">
       <h2>Event timeline</h2>
-      <p>Deadlines must remain in chronological order. Browser clocks never determine access.</p>
+      <p>Deadlines must remain in chronological order and take effect immediately.</p>
     </div>
     <div class="form-grid">
       <div class="field">

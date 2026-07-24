@@ -66,7 +66,7 @@ export class GitHubApiError extends Error {
 }
 
 function githubHeaders(env: Env, jsonBody = false): Headers {
-  if (!env.GITHUB_TOKEN) throw new GitHubApiError('GitHub verification is not configured.', 503);
+  if (!env.GITHUB_TOKEN) throw new GitHubApiError('Repository verification is temporarily unavailable.', 503);
   const headers = new Headers({
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${env.GITHUB_TOKEN}`,
@@ -88,10 +88,10 @@ async function githubJson<T>(env: Env, path: string, init: RequestInit = {}): Pr
   const response = await githubFetch(env, path, init);
   if (!response.ok) {
     const message = response.status === 401 || response.status === 403
-      ? 'GitHub authorization failed.'
+      ? 'Repository verification is temporarily unavailable.'
       : response.status === 404
         ? 'The GitHub repository or commit was not found.'
-        : `GitHub returned status ${response.status}.`;
+        : 'GitHub could not complete the request. Please try again.';
     throw new GitHubApiError(message, response.status);
   }
   return response.json<T>();
@@ -144,7 +144,7 @@ export async function verifyPublicRepository(env: Env, repositoryUrl: string, co
 
 function repositoryPath(fullName: string): string {
   const [owner, name, ...rest] = fullName.split('/');
-  if (!owner || !name || rest.length) throw new GitHubApiError('Stored GitHub repository metadata is invalid.', 500);
+  if (!owner || !name || rest.length) throw new GitHubApiError('Repository details could not be read.', 500);
   return `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`;
 }
 
@@ -152,7 +152,7 @@ export async function listRepositoryFiles(env: Env, fullName: string, commitSha:
   const path = repositoryPath(fullName);
   const commit = await githubJson<GitHubCommit>(env, `${path}/commits/${encodeURIComponent(commitSha)}`);
   const treeSha = commit.commit?.tree.sha;
-  if (!treeSha) throw new GitHubApiError('GitHub did not return a tree for the submitted commit.', 502);
+  if (!treeSha) throw new GitHubApiError('This repository could not be prepared for review.', 502);
   const tree = await githubJson<GitHubTree>(env, `${path}/git/trees/${encodeURIComponent(treeSha)}?recursive=1`);
   if (tree.truncated) throw new GitHubApiError('This repository is too large for the bounded AI review.', 400);
   return tree.tree
@@ -165,7 +165,7 @@ export async function readRepositoryFile(env: Env, fullName: string, blobSha: st
     env,
     `${repositoryPath(fullName)}/git/blobs/${encodeURIComponent(blobSha)}`
   );
-  if (blob.encoding !== 'base64') throw new GitHubApiError('GitHub returned an unsupported file encoding.', 502);
+  if (blob.encoding !== 'base64') throw new GitHubApiError('One of the repository files could not be read.', 502);
   const binary = atob(blob.content.replace(/\s/g, ''));
   const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
   return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
@@ -179,7 +179,7 @@ function archiveName(teamId: number, sourceName: string): string {
 async function destinationRepository(env: Env, name: string): Promise<GitHubRepository | null> {
   const response = await githubFetch(env, `/repos/${encodeURIComponent(env.GITHUB_ORG)}/${encodeURIComponent(name)}`);
   if (response.status === 404) return null;
-  if (!response.ok) throw new GitHubApiError(`GitHub returned status ${response.status}.`, response.status);
+  if (!response.ok) throw new GitHubApiError('GitHub could not check the organization repository.', response.status);
   return response.json<GitHubRepository>();
 }
 
@@ -190,7 +190,7 @@ export async function forkAndArchiveRepository(
   commitSha: string
 ): Promise<ForkResult> {
   const [owner, repositoryName] = sourceFullName.split('/');
-  if (!owner || !repositoryName) throw new GitHubApiError('Stored GitHub repository metadata is invalid.', 500);
+  if (!owner || !repositoryName) throw new GitHubApiError('Repository details could not be read.', 500);
   const name = archiveName(teamId, repositoryName);
   let destination = await destinationRepository(env, name);
   const now = new Date().toISOString();
@@ -204,7 +204,7 @@ export async function forkAndArchiveRepository(
       throw new GitHubApiError(
         response.status === 422
           ? 'GitHub could not create this fork. The organization may already have a fork in the same repository network.'
-          : `GitHub could not create the fork (status ${response.status}).`,
+          : 'GitHub could not create the organization archive.',
         response.status
       );
     }
@@ -223,7 +223,7 @@ export async function forkAndArchiveRepository(
   if (commitResponse.status === 404 || commitResponse.status === 409) {
     return { status: 'pending', url: destination.html_url, forkedAt: now };
   }
-  if (!commitResponse.ok) throw new GitHubApiError(`GitHub could not verify the forked commit (status ${commitResponse.status}).`, commitResponse.status);
+  if (!commitResponse.ok) throw new GitHubApiError('GitHub could not verify the organization archive.', commitResponse.status);
 
   const archived = await githubJson<GitHubRepository>(
     env,

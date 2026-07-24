@@ -89,7 +89,7 @@ export const actions: Actions = {
     requireAdmin(locals);
     const id = Number(params.id);
     if (!Number.isInteger(id) || id < 1) error(404, 'Team not found');
-    if (!platform) return fail(500, { reviewMessage: 'Cloudflare platform bindings are unavailable.' });
+    if (!platform) return fail(500, { reviewMessage: 'Reviews are temporarily unavailable. Please try again.' });
     const db = getDb(platform);
     const [eventSettings, aiSettings, team, idea, submission] = await Promise.all([
       getSettings(db),
@@ -163,7 +163,8 @@ export const actions: Actions = {
         ).run();
       return { reviewSuccess: true };
     } catch (cause) {
-      const message = cause instanceof Error ? cause.message.slice(0, 1000) : 'The AI review failed.';
+      console.error(JSON.stringify({ event: 'ai_review_failed', cause: cause instanceof Error ? cause.message : String(cause) }));
+      const message = 'The review could not be completed. Check the review settings and try again.';
       await db.prepare(`UPDATE ai_reviews SET status='failed', completed_at=?, error=?,
         duration_ms=? WHERE submission_id=?`)
         .bind(new Date().toISOString(), message, Date.now() - startedAtMs, submission.id).run();

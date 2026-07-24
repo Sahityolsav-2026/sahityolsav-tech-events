@@ -23,18 +23,18 @@ export interface AiSettings {
 }
 
 export function getDb(platform: App.Platform | undefined): D1Database {
-  if (!platform?.env.DB) error(500, 'Database binding is unavailable');
+  if (!platform?.env.DB) error(500, 'The service is temporarily unavailable');
   return platform.env.DB;
 }
 
 export async function getSettings(db: D1Database): Promise<EventSettings> {
   const settings = await db.prepare('SELECT * FROM event_settings WHERE id = 1').first<EventSettings>();
-  if (!settings) error(500, 'Event settings have not been initialized');
+  if (!settings) error(500, 'Event settings are temporarily unavailable');
   return settings;
 }
 
 export async function getAiSettings(db: D1Database): Promise<AiSettings> {
   const settings = await db.prepare('SELECT * FROM ai_settings WHERE id = 1').first<AiSettings>();
-  if (!settings) error(500, 'AI review settings have not been initialized');
+  if (!settings) error(500, 'Review settings are temporarily unavailable');
   return settings;
 }

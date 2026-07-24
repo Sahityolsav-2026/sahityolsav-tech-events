@@ -26,8 +26,7 @@
     ['member_contributions', 'Member contributions'],
     ['limitations', 'Known limitations'],
     ['fork_status', 'Archive status'],
-    ['fork_url', 'Organization archive'],
-    ['fork_error', 'Archive error']
+    ['fork_url', 'Organization archive']
   ];
   const value = (entry: unknown) => entry === null || entry === undefined || entry === '' ? 'Not provided' : String(entry);
 </script>
@@ -181,11 +180,7 @@
             {#each data.review.files_inspected as path}<li><code>{path}</code></li>{/each}
           </ul>
         </details>
-        <p class="mt-4 text-xs text-ink-soft">
-          {data.review.turns} turns · {data.review.files_bytes.toLocaleString('en-IN')} source bytes ·
-          {data.review.input_tokens.toLocaleString('en-IN')} input tokens · {data.review.output_tokens.toLocaleString('en-IN')} output tokens ·
-          completed {formatIstDateTime(String(data.review.completed_at))}
-        </p>
+        <p class="mt-4 text-xs text-ink-soft">Completed {formatIstDateTime(String(data.review.completed_at))}</p>
       {:else if data.review.status === 'failed'}
         <div class="alert alert-error">{data.review.error}</div>
       {:else}
@@ -197,7 +192,7 @@
       {#if !data.reviewAllowed}
         <div class="alert alert-info">Reviews become available after the final submission deadline.</div>
       {:else if !data.aiConfigured}
-        <div class="alert alert-info">Configure and enable the provider in <a class="font-semibold text-brand" href="/admin/ai">AI review settings</a>.</div>
+        <div class="alert alert-info">Configure and enable the review service in <a class="font-semibold text-brand" href="/admin/ai">AI review settings</a>.</div>
       {:else if !data.submission}
         <p class="text-sm text-ink-soft">A final submission is required before review.</p>
       {:else}

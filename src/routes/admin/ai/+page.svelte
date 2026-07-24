@@ -7,7 +7,7 @@
   <div>
     <p class="page-kicker">Administration</p>
     <h1>AI review settings</h1>
-    <p class="page-description">Configure the OpenAI-compatible provider used for manual, advisory source reviews.</p>
+    <p class="page-description">Configure the service used for manual, advisory project reviews.</p>
   </div>
   <a class="btn btn-secondary" href="/admin">Back to overview</a>
 </div>
@@ -18,17 +18,17 @@
 <form method="POST" class="panel mt-6">
   <section class="form-section">
     <div class="form-section-header">
-      <h2>Provider connection</h2>
-      <p>The key remains server-side and is never returned by this page.</p>
+      <h2>Review service</h2>
+      <p>Update the connection used when an administrator starts a review.</p>
     </div>
     <div class="form-stack">
       <div class="field">
-        <label for="endpoint">OpenAI-compatible base URL</label>
-        <input id="endpoint" name="endpoint" type="url" placeholder="https://provider.example/v1" value={formValues?.endpoint ?? data.settings.endpoint} />
-        <p class="field-help">Use the base URL ending in <code>/v1</code>, not the full chat-completions path.</p>
+        <label for="endpoint">Service URL</label>
+        <input id="endpoint" name="endpoint" type="url" placeholder="https://service.example/v1" value={formValues?.endpoint ?? data.settings.endpoint} />
+        <p class="field-help">Use the service URL ending in <code>/v1</code>.</p>
       </div>
       <div class="field">
-        <label for="model">Model ID</label>
+        <label for="model">Model</label>
         <input id="model" name="model" placeholder="model-name" value={formValues?.model ?? data.settings.model} />
       </div>
       <div class="field">

@@ -60,7 +60,7 @@ export const actions: Actions = {
     if (!atOrAfter(settings.submission_deadline)) {
       return fail(403, { archiveMessage: 'Repositories can only be archived after the final submission deadline.' });
     }
-    if (!platform) return fail(500, { archiveMessage: 'Cloudflare platform bindings are unavailable.' });
+    if (!platform) return fail(500, { archiveMessage: 'Repository archiving is temporarily unavailable. Please try again.' });
 
     const candidates = await db.prepare(`SELECT id, team_id, repository_full_name, commit_sha
       FROM submissions
@@ -87,7 +87,8 @@ export const actions: Actions = {
         if (result.status === 'archived') archived++;
         else pending++;
       } catch (cause) {
-        const message = cause instanceof Error ? cause.message.slice(0, 500) : 'Unknown GitHub error';
+        console.error(JSON.stringify({ event: 'repository_archive_failed', cause: cause instanceof Error ? cause.message : String(cause) }));
+        const message = 'The repository archive could not be completed.';
         await db.prepare(`UPDATE submissions SET fork_status='failed', fork_error=? WHERE id=?`)
           .bind(message, submission.id).run();
         failed++;

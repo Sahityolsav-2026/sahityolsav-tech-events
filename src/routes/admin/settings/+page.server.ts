@@ -37,7 +37,7 @@ export const actions: Actions = {
       values.development_deadline,
       values.submission_deadline
     ].map((value) => isoFromLocal(value, values.timezone));
-    if (dates.some((date) => !date)) return fail(400, { message: 'All deadlines must be valid IST dates and times.', values });
+    if (dates.some((date) => !date)) return fail(400, { message: 'Enter a valid date and time for every deadline.', values });
     const times = dates.map((date) => Date.parse(date!));
     if (!(times[0] < times[1] && times[1] < times[2] && times[2] < times[3])) return fail(400, { message: 'Deadlines must be in chronological order.', values });
     await getDb(platform).prepare(`UPDATE event_settings SET event_name=?, timezone=?, registration_deadline=?, idea_deadline=?,
