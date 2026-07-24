@@ -124,7 +124,7 @@ export const actions: Actions = {
       apkUploadedAt = now;
     }
     try {
-      await db.prepare(`INSERT INTO submissions (team_id, project_name, description, repository_url, commit_sha, application_type,
+      const saveSubmission = db.prepare(`INSERT INTO submissions (team_id, project_name, description, repository_url, commit_sha, application_type,
         application_url, test_instructions, ai_tools, preexisting_assets, member_contributions, limitations, confirmed, submitted_at, updated_at,
         repository_id, repository_full_name, repository_verified_at, fork_status, repository_branch,
         apk_object_key, apk_filename, apk_size, apk_uploaded_at)
@@ -162,7 +162,10 @@ export const actions: Actions = {
           apkFilename,
           apkSize,
           apkUploadedAt
-        ).run();
+        );
+      const clearPreviousReview = db.prepare(`DELETE FROM ai_reviews
+        WHERE submission_id=(SELECT id FROM submissions WHERE team_id=?)`).bind(team.id);
+      await db.batch([saveSubmission, clearPreviousReview]);
     } catch (cause) {
       if (newApkKey) await platform.env.APKS.delete(newApkKey);
       console.error(JSON.stringify({ event: 'submission_save_failed', cause: String(cause) }));

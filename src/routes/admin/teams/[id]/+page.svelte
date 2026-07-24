@@ -215,9 +215,7 @@
     {/if}
 
     <div class={data.review ? 'mt-6 border-t pt-5' : ''}>
-      {#if !data.reviewAllowed}
-        <div class="alert alert-info">Reviews become available after the final submission deadline.</div>
-      {:else if !data.aiConfigured}
+      {#if !data.aiConfigured}
         <div class="alert alert-info">Configure and enable the review service in <a class="font-semibold text-brand" href="/admin/ai">AI review settings</a>.</div>
       {:else if !data.submission}
         <p class="text-sm text-ink-soft">A final submission is required before review.</p>

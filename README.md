@@ -110,7 +110,7 @@ Web submissions may include a live application URL. Mobile submissions may inclu
 
 ## Initial AI reviews
 
-Administrators configure an OpenAI-compatible API endpoint, model, API key, and enabled status at `/admin/ai`. The provider key is stored in D1 and is never returned to the browser. After the final submission deadline, open a submitted team from `/admin` and choose **Run AI review**.
+Administrators configure an OpenAI-compatible API endpoint, model, API key, and enabled status at `/admin/ai`. The provider key is stored in D1 and is never returned to the browser. Once a team has submitted, open it from `/admin` and choose **Run AI review**. Saving a new version of the submission clears its earlier review so the report cannot be confused with the current source.
 
 The Pi-based reviewer reads a bounded selection of text files from the exact verified Git commit through GitHub's API, preferring the archived organization fork when it is ready. It cannot execute or change repository code, access team testing credentials, rank teams, or make a judging decision. Every concern must cite inspected source. Each saved report records its model, endpoint, repository, commit, timestamps, inspected files, source bytes, model turns, token usage, and duration.
 

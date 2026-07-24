@@ -45,7 +45,7 @@
       <input name="enabled" type="checkbox" value="yes" checked={formValues?.enabled ?? data.settings.enabled} />
       <span>
         <strong class="block text-ink">Enable AI reviews</strong>
-        Admins can manually run reviews after final submissions close.
+        Admins can manually run a review as soon as a team submits.
       </span>
     </label>
   </section>

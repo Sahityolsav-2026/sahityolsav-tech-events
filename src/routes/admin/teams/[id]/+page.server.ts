@@ -2,8 +2,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { hashPassword, requireAdmin } from '$lib/server/auth';
 import { runRepositoryReview } from '$lib/server/ai-review';
-import { atOrAfter } from '$lib/server/deadlines';
-import { getAiSettings, getDb, getSettings } from '$lib/server/db';
+import { getAiSettings, getDb } from '$lib/server/db';
 import { parseGitHubRepositoryUrl } from '$lib/server/github';
 import { MIN_PASSWORD_LENGTH, text } from '$lib/server/validation';
 
@@ -43,11 +42,10 @@ export const load: PageServerLoad = async ({ locals, platform, params }) => {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id < 1) error(404, 'Team not found');
   const db = getDb(platform);
-  const [team, idea, submission, eventSettings, aiSettings] = await Promise.all([
+  const [team, idea, submission, aiSettings] = await Promise.all([
     db.prepare(`SELECT t.*, u.email, u.role FROM teams t JOIN users u ON u.id=t.user_id WHERE t.id=?`).bind(id).first<TeamDetail>(),
     db.prepare('SELECT * FROM ideas WHERE team_id=?').bind(id).first<Record<string, string | number>>(),
     db.prepare('SELECT * FROM submissions WHERE team_id=?').bind(id).first<Record<string, string | number | null>>(),
-    getSettings(db),
     getAiSettings(db)
   ]);
   if (!team) error(404, 'Team not found');
@@ -63,7 +61,6 @@ export const load: PageServerLoad = async ({ locals, platform, params }) => {
       ...review,
       files_inspected: JSON.parse(String(review.files_inspected)) as string[]
     } : null,
-    reviewAllowed: atOrAfter(eventSettings.submission_deadline),
     aiConfigured: Boolean(aiSettings.enabled && aiSettings.endpoint && aiSettings.model && aiSettings.api_key)
   };
 };
@@ -91,8 +88,7 @@ export const actions: Actions = {
     if (!Number.isInteger(id) || id < 1) error(404, 'Team not found');
     if (!platform) return fail(500, { reviewMessage: 'Reviews are temporarily unavailable. Please try again.' });
     const db = getDb(platform);
-    const [eventSettings, aiSettings, team, idea, submission] = await Promise.all([
-      getSettings(db),
+    const [aiSettings, team, idea, submission] = await Promise.all([
       getAiSettings(db),
       db.prepare('SELECT name, leader_name, members FROM teams WHERE id=?').bind(id)
         .first<{ name: string; leader_name: string; members: string }>(),
@@ -108,9 +104,6 @@ export const actions: Actions = {
         }>()
     ]);
     if (!team) error(404, 'Team not found');
-    if (!atOrAfter(eventSettings.submission_deadline)) {
-      return fail(403, { reviewMessage: 'AI reviews become available after the final submission deadline.' });
-    }
     if (!aiSettings.enabled || !aiSettings.endpoint || !aiSettings.model || !aiSettings.api_key) {
       return fail(400, { reviewMessage: 'Configure and enable AI reviews first.' });
     }

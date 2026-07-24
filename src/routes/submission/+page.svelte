@@ -1,13 +1,19 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { formatIstDateTime } from '$lib/date';
 
   let { data, form } = $props();
+  let successDialog = $state<HTMLDialogElement>();
   const formValues = $derived(form && 'values' in form ? form.values : undefined);
   const value = (key: string) => formValues?.[key as keyof typeof formValues] ?? data.submission?.[key as keyof typeof data.submission] ?? '';
   let applicationType = $state(String(value('application_type')));
   const fileSize = (bytes: number) => bytes >= 1024 * 1024
     ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
     : `${Math.ceil(bytes / 1024)} KB`;
+
+  onMount(() => {
+    if (form?.success && successDialog && !successDialog.open) successDialog.showModal();
+  });
 </script>
 
 <div class="page-header">
@@ -31,7 +37,37 @@
 
 {#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
 {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
-{#if form?.success}<div class="alert alert-success mt-4">Submission saved.</div>{/if}
+
+{#if form?.success && data.submission}
+  <dialog
+    bind:this={successDialog}
+    aria-labelledby="submission-success-title"
+    class="m-auto w-[min(92vw,32rem)] rounded-lg border-0 bg-surface p-0 text-ink shadow-panel backdrop:bg-sidebar/70"
+  >
+    <div class="p-6 sm:p-7">
+      <div class="mb-5 flex items-start justify-between gap-4">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-success-soft text-xl font-bold text-success">✓</div>
+        <button class="btn btn-ghost min-h-0 px-2 py-1 text-lg" type="button" aria-label="Close confirmation" onclick={() => successDialog?.close()}>×</button>
+      </div>
+      <h2 id="submission-success-title" class="text-2xl font-semibold tracking-tight">Submission saved</h2>
+      <p class="mt-2 text-sm leading-6 text-ink-soft">Your project is recorded. You can continue editing it until the deadline.</p>
+      <div class="mt-5 grid gap-3 rounded-md bg-surface-muted p-4 text-sm">
+        <div class="flex flex-wrap justify-between gap-2">
+          <span class="text-ink-soft">Official submission time</span>
+          <strong>{formatIstDateTime(data.submission.submitted_at)}</strong>
+        </div>
+        <div class="flex flex-wrap justify-between gap-2">
+          <span class="text-ink-soft">Editing closes</span>
+          <strong>{formatIstDateTime(data.deadline)}</strong>
+        </div>
+      </div>
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button class="btn btn-secondary" type="button" onclick={() => successDialog?.close()}>Continue editing</button>
+        <a class="btn btn-primary" href="/dashboard">Back to overview</a>
+      </div>
+    </div>
+  </dialog>
+{/if}
 
 {#if data.submission?.repository_verified_at}
   <div class="alert alert-success mt-4">
