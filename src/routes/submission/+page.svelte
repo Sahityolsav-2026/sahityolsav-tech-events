@@ -31,13 +31,11 @@
 
 {#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
 {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
-{#if form?.success}<div class="alert alert-success mt-4">Submission saved. Captured {form.verifiedRepository} at commit {form.capturedCommit}.</div>{/if}
+{#if form?.success}<div class="alert alert-success mt-4">Submission saved.</div>{/if}
 
 {#if data.submission?.repository_verified_at}
   <div class="alert alert-success mt-4">
-    <strong>Source captured:</strong> {data.submission.repository_full_name}
-    {#if data.submission.repository_branch} ({data.submission.repository_branch} at {data.submission.commit_sha.slice(0, 12)}){/if},
-    checked {formatIstDateTime(data.submission.repository_verified_at)}.
+    <strong>Repository verified:</strong> {data.submission.repository_full_name}.
     {#if data.submission.fork_status === 'archived' && data.submission.fork_url}
       <a class="font-semibold text-brand" href={data.submission.fork_url} target="_blank" rel="noreferrer">View organization archive</a>
     {/if}
@@ -66,8 +64,8 @@
     <section class="form-section">
       <div class="form-section-header">
         <p class="page-kicker">02</p>
-        <h2>Source snapshot</h2>
-        <p>Enter the public repository. We capture its current default-branch commit when you save.</p>
+        <h2>Repository</h2>
+        <p>Paste the link to your public GitHub repository.</p>
       </div>
       <div class="field">
         <label for="repository_url">Public GitHub repository URL</label>

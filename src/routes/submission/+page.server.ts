@@ -22,7 +22,11 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
   const db = getDb(platform);
   const settings = await getSettings(db);
   const now = new Date();
-  const submission = await db.prepare('SELECT * FROM submissions WHERE team_id = ?').bind(team.id)
+  const submission = await db.prepare(`SELECT project_name, description, repository_url, application_type, application_url,
+      test_instructions, ai_tools, preexisting_assets, member_contributions, limitations,
+      submitted_at, updated_at, repository_full_name, repository_verified_at,
+      fork_url, fork_status, fork_error, apk_object_key, apk_filename, apk_size, apk_uploaded_at
+      FROM submissions WHERE team_id = ?`).bind(team.id)
     .first<SubmissionValues & {
       submitted_at: string;
       updated_at: string;
@@ -31,8 +35,6 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
       fork_url: string | null;
       fork_status: string;
       fork_error: string | null;
-      repository_branch: string | null;
-      commit_sha: string;
       apk_object_key: string | null;
       apk_filename: string | null;
       apk_size: number | null;
@@ -176,10 +178,6 @@ export const actions: Actions = {
         console.error(JSON.stringify({ event: 'old_apk_cleanup_failed', teamId: team.id, cause: String(cause) }));
       }
     }
-    return {
-      success: true,
-      verifiedRepository: verified.fullName,
-      capturedCommit: verified.commitSha.slice(0, 12)
-    };
+    return { success: true };
   }
 };
