@@ -19,6 +19,12 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
   const phase = eventPhase(settings, now);
   return {
     eventName: settings.event_name,
+    deadlines: {
+      registration: settings.registration_deadline,
+      idea: settings.idea_deadline,
+      development: settings.development_deadline,
+      submission: settings.submission_deadline
+    },
     team: { ...details, members: JSON.parse(details?.members ?? '[]') as string[] },
     phase,
     serverTime: now.toISOString(),

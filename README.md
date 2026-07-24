@@ -76,7 +76,7 @@ A small SvelteKit and TypeScript hackathon portal deployed as one Cloudflare Wor
 
 ## Event deadlines
 
-The initial migration inserts editable example dates. After creating the administrator, edit the event name and all deadlines at `/admin/settings`. The form labels times as UTC; D1 stores ISO UTC timestamps. The event timezone record defaults to `Asia/Kolkata`.
+The initial migration inserts editable example dates. After creating the administrator, edit the event name and all deadlines at `/admin/settings`. Inputs and visible dates use Indian Standard Time (`Asia/Kolkata`); D1 stores the corresponding ISO UTC timestamps.
 
 For quick local phase testing, either use `/admin/settings` or run SQL against local D1. This example opens final submission for one hour while keeping the deadlines ordered:
 

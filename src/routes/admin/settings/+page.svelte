@@ -1,20 +1,64 @@
 <script lang="ts">
   let { data, form } = $props();
-  type Field = 'event_name' | 'timezone' | 'registration_deadline' | 'idea_deadline' | 'development_deadline' | 'submission_deadline';
+  type Field = 'event_name' | 'registration_deadline' | 'idea_deadline' | 'development_deadline' | 'submission_deadline';
   const formValues = $derived(form && 'values' in form ? form.values : undefined);
   const value = (key: Field) => formValues?.[key] ?? data.settings[key];
 </script>
-<div class="card narrow">
-  <h1>Event settings</h1>
-  <div class="notice">Deadline inputs are entered and stored as UTC. Event display timezone is {data.settings.timezone}.</div>
-  {#if form?.message}<div class="error">{form.message}</div>{/if}{#if form?.success}<div class="notice">Event settings saved.</div>{/if}
-  <form method="POST">
-    <label for="event_name">Event name</label><input id="event_name" name="event_name" required value={value('event_name')} />
-    <label for="timezone">Event timezone</label><input id="timezone" name="timezone" required value={value('timezone')} placeholder="Asia/Kolkata" />
-    <label for="registration_deadline">Registration deadline (UTC)</label><input id="registration_deadline" name="registration_deadline" type="datetime-local" required value={value('registration_deadline')} />
-    <label for="idea_deadline">Idea deadline (UTC)</label><input id="idea_deadline" name="idea_deadline" type="datetime-local" required value={value('idea_deadline')} />
-    <label for="development_deadline">Development deadline (UTC)</label><input id="development_deadline" name="development_deadline" type="datetime-local" required value={value('development_deadline')} />
-    <label for="submission_deadline">Final submission deadline (UTC)</label><input id="submission_deadline" name="submission_deadline" type="datetime-local" required value={value('submission_deadline')} />
-    <div class="actions"><button>Save settings</button><a class="button secondary" href="/admin">Back to admin</a></div>
-  </form>
+
+<div class="page-header">
+  <div>
+    <p class="page-kicker">Administration</p>
+    <h1>Event settings</h1>
+    <p class="page-description">Control the event name and each server-enforced deadline.</p>
+  </div>
+  <a class="btn btn-secondary" href="/admin">Back to overview</a>
 </div>
+
+<div class="alert alert-info mt-6">
+  <strong>Indian Standard Time:</strong> every value below is entered and displayed in IST (Asia/Kolkata). D1 stores the corresponding UTC timestamp.
+</div>
+{#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
+{#if form?.success}<div class="alert alert-success mt-4">Event settings saved.</div>{/if}
+
+<form method="POST" class="panel mt-6">
+  <section class="form-section">
+    <div class="form-section-header">
+      <h2>Event identity</h2>
+      <p>This name appears on the team dashboard and registration screen.</p>
+    </div>
+    <div class="field max-w-xl">
+      <label for="event_name">Event name</label>
+      <input id="event_name" name="event_name" required value={value('event_name')} />
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="form-section-header">
+      <h2>Event timeline</h2>
+      <p>Deadlines must remain in chronological order. Browser clocks never determine access.</p>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="registration_deadline">Registration closes (IST)</label>
+        <input id="registration_deadline" name="registration_deadline" type="datetime-local" required value={value('registration_deadline')} />
+      </div>
+      <div class="field">
+        <label for="idea_deadline">Idea declaration closes (IST)</label>
+        <input id="idea_deadline" name="idea_deadline" type="datetime-local" required value={value('idea_deadline')} />
+      </div>
+      <div class="field">
+        <label for="development_deadline">Development ends (IST)</label>
+        <input id="development_deadline" name="development_deadline" type="datetime-local" required value={value('development_deadline')} />
+      </div>
+      <div class="field">
+        <label for="submission_deadline">Final submission closes (IST)</label>
+        <input id="submission_deadline" name="submission_deadline" type="datetime-local" required value={value('submission_deadline')} />
+      </div>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <button class="btn btn-primary">Save event settings</button>
+    <span class="text-xs text-ink-soft">Changing a deadline takes effect immediately.</span>
+  </div>
+</form>

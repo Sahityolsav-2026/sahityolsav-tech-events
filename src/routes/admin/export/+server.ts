@@ -1,4 +1,5 @@
 import type { RequestHandler } from './$types';
+import { formatIstDateTime } from '$lib/date';
 import { requireAdmin } from '$lib/server/auth';
 import { getDb } from '$lib/server/db';
 
@@ -18,7 +19,11 @@ export const GET: RequestHandler = async ({ locals, platform }) => {
   const keys = ['name','leader_name','email','members','title','problem','target_users','repository_url','commit_sha','application_url','submission_status','submitted_at'];
   const lines = [headers.map(csv).join(',')];
   for (const row of result.results) {
-    const normalized: Record<string, unknown> = { ...row, members: JSON.parse(String(row.members ?? '[]')).join('; ') };
+    const normalized: Record<string, unknown> = {
+      ...row,
+      members: JSON.parse(String(row.members ?? '[]')).join('; '),
+      submitted_at: row.submitted_at ? formatIstDateTime(String(row.submitted_at)) : ''
+    };
     lines.push(keys.map((key) => csv(normalized[key])).join(','));
   }
   return new Response(`${lines.join('\r\n')}\r\n`, { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="sahityolsav-teams.csv"', 'cache-control': 'no-store' } });

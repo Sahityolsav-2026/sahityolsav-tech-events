@@ -28,4 +28,4 @@
   });
 </script>
 
-<div class="countdown" aria-live="polite">{display}</div>
+<div class="font-mono text-[2.35rem] font-semibold leading-none tracking-[-0.055em] text-paper tabular-nums sm:text-5xl lg:text-[3.5rem]" aria-live="polite">{display}</div>
