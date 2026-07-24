@@ -87,12 +87,9 @@
 </div>
 
 <section class="mt-6">
-  <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <h2>Teams</h2>
-      <p class="text-sm text-ink-soft">Inspect declarations, submissions, and archive status.</p>
-    </div>
-    <a class="btn btn-secondary btn-sm" href="/admin/export">Export CSV</a>
+  <div class="mb-3">
+    <h2>Teams</h2>
+    <p class="text-sm text-ink-soft">Inspect declarations, submissions, and archive status.</p>
   </div>
 
   <div class="table-shell">

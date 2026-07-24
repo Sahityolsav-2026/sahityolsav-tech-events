@@ -12,8 +12,7 @@
   const adminNavigation = [
     { href: '/admin', label: 'Overview' },
     { href: '/admin/settings', label: 'Event settings' },
-    { href: '/admin/ai', label: 'AI review settings' },
-    { href: '/admin/export', label: 'Export CSV' }
+    { href: '/admin/ai', label: 'AI review settings' }
   ];
 
   const navigation = $derived(data.user?.role === 'admin' ? adminNavigation : teamNavigation);

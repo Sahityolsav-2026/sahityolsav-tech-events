@@ -10,7 +10,7 @@ Hackathon teams working quickly from phones and laptops, plus event administrato
 
 ## Product Purpose
 
-Sahityolsav Tech Events is the operational portal for a time-bound hackathon. It gives teams one reliable place to register, declare an idea, track event time, and submit their final project. It gives administrators a compact control surface for deadlines, team readiness, repository records, exports, and advisory AI reviews. Success means every user can identify what matters now and finish it without confusion.
+Sahityolsav Tech Events is the operational portal for a time-bound hackathon. It gives teams one reliable place to register, declare an idea, track event time, and submit their final project. It gives administrators a compact control surface for deadlines, team readiness, repository records, and advisory AI reviews. Success means every user can identify what matters now and finish it without confusion.
 
 ## Brand Personality
 
