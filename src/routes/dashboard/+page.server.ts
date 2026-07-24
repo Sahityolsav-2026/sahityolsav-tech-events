@@ -22,7 +22,6 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
     deadlines: {
       registration: settings.registration_deadline,
       idea: settings.idea_deadline,
-      development: settings.development_deadline,
       submission: settings.submission_deadline
     },
     team: { ...details, members: JSON.parse(details?.members ?? '[]') as string[] },
@@ -32,7 +31,6 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
     ideaStatus: !idea ? 'Not submitted' : before(settings.idea_deadline, now) ? 'Submitted' : 'Locked',
     submission,
     submissionStatus: submission ? (before(settings.submission_deadline, now) ? 'Submitted' : 'Locked') : 'Not submitted',
-    submissionAvailable: now.getTime() >= Date.parse(settings.development_deadline),
     submissionLocked: !before(settings.submission_deadline, now)
   };
 };

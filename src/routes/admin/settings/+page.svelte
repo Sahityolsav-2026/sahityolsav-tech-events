@@ -1,6 +1,6 @@
 <script lang="ts">
   let { data, form } = $props();
-  type Field = 'event_name' | 'registration_deadline' | 'idea_deadline' | 'development_deadline' | 'submission_deadline';
+  type Field = 'event_name' | 'registration_deadline' | 'idea_deadline' | 'submission_deadline';
   const formValues = $derived(form && 'values' in form ? form.values : undefined);
   const value = (key: Field) => formValues?.[key] ?? data.settings[key];
 </script>
@@ -42,10 +42,6 @@
       <div class="field">
         <label for="idea_deadline">Idea declaration closes</label>
         <input id="idea_deadline" name="idea_deadline" type="datetime-local" required value={value('idea_deadline')} />
-      </div>
-      <div class="field">
-        <label for="development_deadline">Development ends</label>
-        <input id="development_deadline" name="development_deadline" type="datetime-local" required value={value('development_deadline')} />
       </div>
       <div class="field">
         <label for="submission_deadline">Final submission closes</label>

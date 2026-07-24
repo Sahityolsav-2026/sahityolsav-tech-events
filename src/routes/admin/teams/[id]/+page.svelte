@@ -4,13 +4,8 @@
   let { data, form } = $props();
   const ideaFields: [string, string][] = [
     ['title', 'Idea title'],
-    ['problem', 'Problem'],
-    ['target_users', 'Target users'],
-    ['importance', 'Why it matters'],
-    ['solution', 'Proposed solution'],
-    ['user_journey', 'Core user journey'],
-    ['mvp_features', 'MVP features'],
-    ['tech_stack', 'Technology stack']
+    ['problem', 'Problem being explored'],
+    ['solution', 'What they might build']
   ];
   const submissionFields: [string, string][] = [
     ['project_name', 'Project name'],

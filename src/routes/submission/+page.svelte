@@ -20,34 +20,25 @@
   </div>
 </div>
 
-{#if !data.available}
-  <div class="panel mt-6">
-    <div class="empty-state">
-      <span class="status status-neutral">Not open yet</span>
-      <h2 class="mt-4">Final submission opens after development</h2>
-      <p class="mt-1 max-w-lg text-sm text-ink-soft">The form opens {formatIstDateTime(data.developmentDeadline)}.</p>
-    </div>
+<div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border bg-surface-muted px-4 py-3 text-sm">
+  <span class="font-medium text-ink">Final submission deadline</span>
+  <span class="text-ink-soft">{formatIstDateTime(data.deadline)}</span>
+</div>
+
+{#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
+{#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
+{#if form?.success}<div class="alert alert-success mt-4">Submission saved. Repository details verified for {form.verifiedRepository}.</div>{/if}
+
+{#if data.submission?.repository_verified_at}
+  <div class="alert alert-success mt-4">
+    <strong>Repository verified:</strong> {data.submission.repository_full_name}, checked {formatIstDateTime(data.submission.repository_verified_at)}.
+    {#if data.submission.fork_status === 'archived' && data.submission.fork_url}
+      <a class="font-semibold text-brand" href={data.submission.fork_url} target="_blank" rel="noreferrer">View organization archive</a>
+    {/if}
   </div>
-{:else}
-  <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border bg-surface-muted px-4 py-3 text-sm">
-    <span class="font-medium text-ink">Final submission deadline</span>
-    <span class="text-ink-soft">{formatIstDateTime(data.deadline)}</span>
-  </div>
+{/if}
 
-  {#if data.locked}<div class="alert alert-info mt-4">The deadline has passed. This official submission is read-only.</div>{/if}
-  {#if form?.message}<div class="alert alert-error mt-4" role="alert">{form.message}</div>{/if}
-  {#if form?.success}<div class="alert alert-success mt-4">Submission saved. Repository details verified for {form.verifiedRepository}.</div>{/if}
-
-  {#if data.submission?.repository_verified_at}
-    <div class="alert alert-success mt-4">
-      <strong>Repository verified:</strong> {data.submission.repository_full_name}, checked {formatIstDateTime(data.submission.repository_verified_at)}.
-      {#if data.submission.fork_status === 'archived' && data.submission.fork_url}
-        <a class="font-semibold text-brand" href={data.submission.fork_url} target="_blank" rel="noreferrer">View organization archive</a>
-      {/if}
-    </div>
-  {/if}
-
-  <form method="POST" class="panel mt-6">
+<form method="POST" class="panel mt-6">
     <section class="form-section">
       <div class="form-section-header">
         <p class="page-kicker">01</p>
@@ -159,5 +150,4 @@
         </span>
       {/if}
     </div>
-  </form>
-{/if}
+</form>

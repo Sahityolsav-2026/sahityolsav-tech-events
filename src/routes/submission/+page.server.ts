@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { requireTeam } from '$lib/server/auth';
-import { atOrAfter, before } from '$lib/server/deadlines';
+import { before } from '$lib/server/deadlines';
 import { getDb, getSettings } from '$lib/server/db';
 import { GitHubApiError, verifyPublicRepository } from '$lib/server/github';
 import { required, text, validUrl } from '$lib/server/validation';
@@ -26,9 +26,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
     }>();
   return {
     submission,
-    available: atOrAfter(settings.development_deadline, now),
     locked: !before(settings.submission_deadline, now),
-    developmentDeadline: settings.development_deadline,
     deadline: settings.submission_deadline,
     onTime: submission ? Date.parse(submission.submitted_at) <= Date.parse(settings.submission_deadline) : null
   };
@@ -40,7 +38,6 @@ export const actions: Actions = {
     const db = getDb(platform);
     const settings = await getSettings(db);
     const nowDate = new Date();
-    if (!atOrAfter(settings.development_deadline, nowDate)) return fail(403, { message: 'Final submission is not open yet.' });
     if (!before(settings.submission_deadline, nowDate)) return fail(403, { message: 'Final submission is locked because the deadline has passed.' });
     const form = await request.formData();
     const values = Object.fromEntries(fields.map((field) => [field, text(form, field)])) as SubmissionValues;

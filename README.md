@@ -81,7 +81,7 @@ The initial migration inserts editable example dates. After creating the adminis
 For quick local phase testing, either use `/admin/settings` or run SQL against local D1. This example opens final submission for one hour while keeping the deadlines ordered:
 
 ```sh
-npx wrangler d1 execute DB --local --command "UPDATE event_settings SET registration_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','-4 hours'), idea_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 hours'), development_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour'), submission_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','+1 hour') WHERE id=1;"
+npx wrangler d1 execute DB --local --command "UPDATE event_settings SET registration_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','-4 hours'), idea_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 hours'), submission_deadline=strftime('%Y-%m-%dT%H:%M:%fZ','now','+1 hour') WHERE id=1;"
 ```
 
 Restore real event deadlines in `/admin/settings` before deployment. All write deadlines are rechecked on the server.

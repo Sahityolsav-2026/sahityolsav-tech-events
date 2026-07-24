@@ -5,7 +5,7 @@ import { before } from '$lib/server/deadlines';
 import { getDb, getSettings } from '$lib/server/db';
 import { required, text } from '$lib/server/validation';
 
-const fields = ['title', 'problem', 'target_users', 'importance', 'solution', 'user_journey', 'mvp_features', 'tech_stack'] as const;
+const fields = ['title', 'problem', 'solution'] as const;
 type IdeaValues = Record<(typeof fields)[number], string>;
 
 export const load: PageServerLoad = async ({ locals, platform }) => {
@@ -24,15 +24,18 @@ export const actions: Actions = {
     if (!before(settings.idea_deadline)) return fail(403, { message: 'Idea declaration is locked because the deadline has passed.' });
     const form = await request.formData();
     const values = Object.fromEntries(fields.map((field) => [field, text(form, field)])) as IdeaValues;
-    const missing = required({ Title: values.title, Problem: values.problem, 'Target users': values.target_users, Importance: values.importance, Solution: values.solution, 'User journey': values.user_journey, 'MVP features': values.mvp_features, 'Technology stack': values.tech_stack });
+    const missing = required({
+      'Idea title': values.title,
+      'Problem being explored': values.problem,
+      'What you might build': values.solution
+    });
     if (missing) return fail(400, { message: missing, values });
     const now = new Date().toISOString();
     await db.prepare(`INSERT INTO ideas (team_id, title, problem, target_users, importance, solution, user_journey, mvp_features, tech_stack, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(team_id) DO UPDATE SET title=excluded.title, problem=excluded.problem, target_users=excluded.target_users,
-      importance=excluded.importance, solution=excluded.solution, user_journey=excluded.user_journey,
-      mvp_features=excluded.mvp_features, tech_stack=excluded.tech_stack, updated_at=excluded.updated_at`)
-      .bind(team.id, ...fields.map((field) => values[field]), now, now).run();
+      VALUES (?, ?, ?, '', '', ?, '', '', '', ?, ?)
+      ON CONFLICT(team_id) DO UPDATE SET title=excluded.title, problem=excluded.problem,
+      solution=excluded.solution, updated_at=excluded.updated_at`)
+      .bind(team.id, values.title, values.problem, values.solution, now, now).run();
     return { success: true };
   }
 };

@@ -8,7 +8,6 @@ export interface EventSettings {
   timezone: string;
   registration_deadline: string;
   idea_deadline: string;
-  development_deadline: string;
   submission_deadline: string;
   updated_at: string;
 }

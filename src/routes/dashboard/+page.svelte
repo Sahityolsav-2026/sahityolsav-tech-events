@@ -4,7 +4,7 @@
 
   let { data } = $props();
 
-  const phases = ['Registration', 'Idea declaration', 'Development', 'Final submission', 'Event closed'];
+  const phases = ['Registration', 'Idea declaration', 'Development', 'Event closed'];
   const currentPhaseIndex = $derived(phases.indexOf(data.phase.phase));
   const statusClass = (status: string) => status === 'Submitted'
     ? 'status-success'
@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <ol class="grid grid-cols-2 border-t border-paper/10 sm:grid-cols-5">
+  <ol class="grid grid-cols-2 border-t border-paper/10 sm:grid-cols-4">
     {#each phases as phase, index}
       <li class="border-paper/10 px-4 py-3 text-xs {index < phases.length - 1 ? 'sm:border-r' : ''} {index <= currentPhaseIndex ? 'text-paper' : 'text-paper/35'}">
         <span class="mb-1 block font-mono text-[10px]">{String(index + 1).padStart(2, '0')}</span>
@@ -69,7 +69,7 @@
             <p class="mt-2 font-medium text-ink">{data.idea.title}</p>
             <p class="mt-1 line-clamp-2 text-sm text-ink-soft">{data.idea.problem}</p>
           {:else}
-            <p class="mt-2 text-sm text-ink-soft">Explain the problem, target users, solution, and planned MVP.</p>
+            <p class="mt-2 text-sm text-ink-soft">Share the problem you are exploring and what you might build.</p>
           {/if}
           <p class="mt-2 text-xs text-ink-soft">Deadline: {formatIstDateTime(data.deadlines.idea)}</p>
         </div>
@@ -90,19 +90,11 @@
           {:else}
             <p class="mt-2 text-sm text-ink-soft">Provide the project links, source version, and testing details.</p>
           {/if}
-          <p class="mt-2 text-xs text-ink-soft">
-            {data.submissionAvailable
-              ? `Deadline: ${formatIstDateTime(data.deadlines.submission)}`
-              : `Opens: ${formatIstDateTime(data.deadlines.development)}`}
-          </p>
+          <p class="mt-2 text-xs text-ink-soft">Deadline: {formatIstDateTime(data.deadlines.submission)}</p>
         </div>
-        {#if data.submissionAvailable}
-          <a class="btn {data.submissionStatus === 'Not submitted' ? 'btn-primary' : 'btn-secondary'}" href="/submission">
-            {submissionAction(data.submissionLocked, Boolean(data.submission))}
-          </a>
-        {:else}
-          <span class="status status-neutral">Not open yet</span>
-        {/if}
+        <a class="btn {data.submissionStatus === 'Not submitted' ? 'btn-primary' : 'btn-secondary'}" href="/submission">
+          {submissionAction(data.submissionLocked, Boolean(data.submission))}
+        </a>
       </article>
     </div>
   </section>

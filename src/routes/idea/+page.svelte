@@ -10,7 +10,7 @@
   <div>
     <p class="page-kicker">Team deliverable</p>
     <h1>Idea declaration</h1>
-    <p class="page-description">Describe the problem and the smallest useful solution your team plans to build.</p>
+    <p class="page-description">Share your current direction. It can change while you explore.</p>
   </div>
   <div class="flex flex-wrap items-center gap-3">
     <span class="status {data.locked ? 'status-warning' : data.idea ? 'status-success' : 'status-neutral'}">
@@ -34,64 +34,21 @@
 <form method="POST" class="panel mt-6">
   <section class="form-section">
     <div class="form-section-header">
-      <p class="page-kicker">01</p>
-      <h2>The problem</h2>
-      <p>Give judges enough context to understand who is affected and why this matters.</p>
+      <h2>Your starting point</h2>
+      <p>A rough idea is enough. Save what you know now and revise it before the deadline.</p>
     </div>
     <div class="form-stack">
       <div class="field">
         <label for="title">Idea title</label>
-        <input id="title" name="title" required disabled={data.locked} value={value('title')} />
-      </div>
-      <div class="form-grid">
-        <div class="field">
-          <label for="problem">Problem being addressed</label>
-          <textarea id="problem" name="problem" required disabled={data.locked}>{value('problem')}</textarea>
-        </div>
-        <div class="field">
-          <label for="target_users">Target users</label>
-          <textarea id="target_users" name="target_users" required disabled={data.locked}>{value('target_users')}</textarea>
-        </div>
+        <input id="title" name="title" placeholder="A working title is fine" required disabled={data.locked} value={value('title')} />
       </div>
       <div class="field">
-        <label for="importance">Why the problem matters</label>
-        <textarea id="importance" name="importance" required disabled={data.locked}>{value('importance')}</textarea>
-      </div>
-    </div>
-  </section>
-
-  <section class="form-section">
-    <div class="form-section-header">
-      <p class="page-kicker">02</p>
-      <h2>The proposed experience</h2>
-      <p>Focus on the core outcome and the path a user takes to reach it.</p>
-    </div>
-    <div class="form-grid">
-      <div class="field">
-        <label for="solution">Proposed solution</label>
-        <textarea id="solution" name="solution" required disabled={data.locked}>{value('solution')}</textarea>
+        <label for="problem">What problem are you exploring?</label>
+        <textarea id="problem" name="problem" placeholder="Describe the situation or need you want to investigate" required disabled={data.locked}>{value('problem')}</textarea>
       </div>
       <div class="field">
-        <label for="user_journey">Core user journey</label>
-        <textarea id="user_journey" name="user_journey" required disabled={data.locked}>{value('user_journey')}</textarea>
-      </div>
-    </div>
-  </section>
-
-  <section class="form-section">
-    <div class="form-section-header">
-      <p class="page-kicker">03</p>
-      <h2>Build plan</h2>
-      <p>Keep the MVP narrow enough to finish and demonstrate during the event.</p>
-    </div>
-    <div class="form-grid">
-      <div class="field">
-        <label for="mvp_features">Features planned for the MVP</label>
-        <textarea id="mvp_features" name="mvp_features" required disabled={data.locked}>{value('mvp_features')}</textarea>
-      </div>
-      <div class="field">
-        <label for="tech_stack">Technology stack</label>
-        <textarea id="tech_stack" name="tech_stack" required disabled={data.locked}>{value('tech_stack')}</textarea>
+        <label for="solution">What might you build?</label>
+        <textarea id="solution" name="solution" placeholder="Describe your current direction, even if it is not final" required disabled={data.locked}>{value('solution')}</textarea>
       </div>
     </div>
   </section>
