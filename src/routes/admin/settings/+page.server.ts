@@ -7,7 +7,15 @@ import { isoFromLocal, localFromIso, required, text } from '$lib/server/validati
 export const load: PageServerLoad = async ({ locals, platform }) => {
   requireAdmin(locals);
   const settings = await getSettings(getDb(platform));
-  return { settings: { ...settings, registration_deadline: localFromIso(settings.registration_deadline), idea_deadline: localFromIso(settings.idea_deadline), development_deadline: localFromIso(settings.development_deadline), submission_deadline: localFromIso(settings.submission_deadline) } };
+  return {
+    settings: {
+      ...settings,
+      registration_deadline: localFromIso(settings.registration_deadline, settings.timezone),
+      idea_deadline: localFromIso(settings.idea_deadline, settings.timezone),
+      development_deadline: localFromIso(settings.development_deadline, settings.timezone),
+      submission_deadline: localFromIso(settings.submission_deadline, settings.timezone)
+    }
+  };
 };
 
 export const actions: Actions = {
@@ -23,7 +31,12 @@ export const actions: Actions = {
     if (missing) return fail(400, { message: missing, values });
     try { new Intl.DateTimeFormat('en', { timeZone: values.timezone }).format(); }
     catch { return fail(400, { message: 'Enter a valid IANA timezone, such as Asia/Kolkata.', values }); }
-    const dates = [values.registration_deadline, values.idea_deadline, values.development_deadline, values.submission_deadline].map(isoFromLocal);
+    const dates = [
+      values.registration_deadline,
+      values.idea_deadline,
+      values.development_deadline,
+      values.submission_deadline
+    ].map((value) => isoFromLocal(value, values.timezone));
     if (dates.some((date) => !date)) return fail(400, { message: 'All deadlines must be valid UTC dates and times.', values });
     const times = dates.map((date) => Date.parse(date!));
     if (!(times[0] < times[1] && times[1] < times[2] && times[2] < times[3])) return fail(400, { message: 'Deadlines must be in chronological order.', values });
