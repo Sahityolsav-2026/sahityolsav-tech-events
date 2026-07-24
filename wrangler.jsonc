@@ -4,6 +4,7 @@
   "main": ".svelte-kit/cloudflare/_worker.js",
   "compatibility_date": "2026-07-24",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
   "vars": {
     "GITHUB_ORG": "Sahityolsav-2026"
   },
@@ -11,6 +12,12 @@
     "binding": "ASSETS",
     "directory": ".svelte-kit/cloudflare"
   },
+  "routes": [
+    {
+      "pattern": "hackathon.76545689.xyz",
+      "custom_domain": true
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
