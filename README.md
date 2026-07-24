@@ -106,7 +106,7 @@ The organization name is the non-secret `GITHUB_ORG` value in `wrangler.jsonc`. 
 
 ## Application delivery
 
-Web submissions require a live application URL. Mobile submissions require an APK upload of up to 90 MB. APKs remain private in R2 and can be downloaded only by the submitting team or an administrator through the portal.
+Web submissions may include a live application URL. Mobile submissions may include an APK upload of up to 90 MB. Both delivery fields are optional so teams can still submit their repository and testing notes without a finished build. Uploaded APKs remain private in R2 and can be downloaded only by the submitting team or an administrator through the portal.
 
 ## Initial AI reviews
 

@@ -140,9 +140,13 @@
           <div>
             <dt>Live application</dt>
             <dd>
-              <a class="font-medium text-brand" href={String(data.submission.application_url)} target="_blank" rel="noreferrer">
-                {data.submission.application_url}
-              </a>
+              {#if data.submission.application_url}
+                <a class="font-medium text-brand" href={String(data.submission.application_url)} target="_blank" rel="noreferrer">
+                  {data.submission.application_url}
+                </a>
+              {:else}
+                Not provided
+              {/if}
             </dd>
           </div>
         {:else if data.submission.application_type === 'Mobile'}

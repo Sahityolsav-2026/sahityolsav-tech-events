@@ -90,12 +90,13 @@
         </div>
         {#if applicationType === 'Web'}
           <div class="field">
-            <label for="application_url">Live application URL</label>
-            <input id="application_url" name="application_url" type="url" required disabled={data.locked} value={value('application_url')} />
+            <label for="application_url">Live application URL <span class="font-normal text-ink-soft">(optional)</span></label>
+            <input id="application_url" name="application_url" type="url" disabled={data.locked} value={value('application_url')} />
+            <p class="field-help">Leave this blank if the project is not deployed.</p>
           </div>
         {:else if applicationType === 'Mobile'}
           <div class="field">
-            <label for="apk">APK file</label>
+            <label for="apk">APK file <span class="font-normal text-ink-soft">(optional)</span></label>
             {#if data.submission?.apk_object_key}
               <div class="mb-2 flex flex-wrap items-center gap-2 text-sm">
                 <a class="font-semibold text-brand" href="/submission/apk">{data.submission.apk_filename}</a>
@@ -103,8 +104,8 @@
               </div>
             {/if}
             {#if !data.locked}
-              <input id="apk" name="apk" type="file" accept=".apk,application/vnd.android.package-archive" required={!data.submission?.apk_object_key} />
-              <p class="field-help">{data.submission?.apk_object_key ? 'Choose a file only to replace the current APK.' : 'APK only, maximum 90 MB.'}</p>
+              <input id="apk" name="apk" type="file" accept=".apk,application/vnd.android.package-archive" />
+              <p class="field-help">{data.submission?.apk_object_key ? 'Choose a file only to replace the current APK.' : 'Leave this blank if a build is not ready. APK only, maximum 90 MB.'}</p>
             {/if}
           </div>
         {/if}
@@ -147,7 +148,7 @@
           <input type="checkbox" name="confirmed" value="yes" required />
           <span>
             <strong class="block text-ink">Submission confirmation</strong>
-            I confirm that the repository, delivery file or URL, disclosures, and testing information above are accurate.
+            I confirm that the submitted information above is accurate.
           </span>
         </label>
       </section>

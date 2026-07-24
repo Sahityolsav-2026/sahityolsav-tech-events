@@ -71,7 +71,7 @@ export const actions: Actions = {
     if (missing) return fail(400, { message: missing, values });
     if (!validUrl(values.repository_url)) return fail(400, { message: 'Enter a valid repository URL.', values });
     if (values.application_type !== 'Web' && values.application_type !== 'Mobile') return fail(400, { message: 'Choose Web or Mobile.', values });
-    if (values.application_type === 'Web' && !validUrl(values.application_url)) {
+    if (values.application_type === 'Web' && values.application_url && !validUrl(values.application_url)) {
       return fail(400, { message: 'Enter a valid live application URL.', values });
     }
     if (form.get('confirmed') !== 'yes') return fail(400, { message: 'You must confirm that the submitted information is accurate.', values });
@@ -81,9 +81,6 @@ export const actions: Actions = {
     ).bind(team.id).first<StoredApk>();
     const apkEntry = form.get('apk');
     const apk = apkEntry instanceof File && apkEntry.size ? apkEntry : null;
-    if (values.application_type === 'Mobile' && !apk && !existing?.apk_object_key) {
-      return fail(400, { message: 'Choose an APK file.', values });
-    }
     if (values.application_type === 'Mobile' && apk) {
       const apkError = await validateApk(apk);
       if (apkError) return fail(400, { message: apkError, values });
