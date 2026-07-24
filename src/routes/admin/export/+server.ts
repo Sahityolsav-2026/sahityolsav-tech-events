@@ -1,0 +1,25 @@
+import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/auth';
+import { getDb } from '$lib/server/db';
+
+function csv(value: unknown): string {
+  const string = value == null ? '' : String(value);
+  return `"${string.replaceAll('"', '""')}"`;
+}
+
+export const GET: RequestHandler = async ({ locals, platform }) => {
+  requireAdmin(locals);
+  const result = await getDb(platform).prepare(`SELECT t.name, t.leader_name, u.email, t.members,
+    i.title, i.problem, i.target_users, s.repository_url, s.commit_sha, s.application_url,
+    CASE WHEN s.id IS NULL THEN 'Not submitted' ELSE 'Submitted' END AS submission_status, s.submitted_at
+    FROM teams t JOIN users u ON u.id=t.user_id LEFT JOIN ideas i ON i.team_id=t.id
+    LEFT JOIN submissions s ON s.team_id=t.id ORDER BY t.name`).all<Record<string, unknown>>();
+  const headers = ['Team name','Leader name','Email','Team members','Idea title','Problem','Target users','Repository URL','Commit SHA','Application URL','Submission status','Submission time'];
+  const keys = ['name','leader_name','email','members','title','problem','target_users','repository_url','commit_sha','application_url','submission_status','submitted_at'];
+  const lines = [headers.map(csv).join(',')];
+  for (const row of result.results) {
+    const normalized: Record<string, unknown> = { ...row, members: JSON.parse(String(row.members ?? '[]')).join('; ') };
+    lines.push(keys.map((key) => csv(normalized[key])).join(','));
+  }
+  return new Response(`${lines.join('\r\n')}\r\n`, { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="sahityolsav-teams.csv"', 'cache-control': 'no-store' } });
+};
